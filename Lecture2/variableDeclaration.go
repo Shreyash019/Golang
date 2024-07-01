@@ -16,4 +16,6 @@ func main() {
 	sn2 := 1212.212
 	ss1 := "Hello"
 	fmt.Println(sn1, sn2, ss1)
+	fmt.Printf("%s %s %f %.2f", s1, s2, f1, f2)
+	fmt.Printf("\n%v %.d %T", n1, n2, s1)
 }
