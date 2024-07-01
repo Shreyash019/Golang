@@ -11,8 +11,7 @@ func main() {
 	const s2 string = "Bye"
 	var b1 bool = true
 	fmt.Println(n1, n2, f1, f2, s1, s2, b1)
-	// Short Variable Declaration
-	sn1 := 10
+	sn1 := 10 // Short variable declaration
 	sn2 := 1212.212
 	ss1 := "Hello"
 	fmt.Println(sn1, sn2, ss1)
