@@ -9,6 +9,6 @@ import (
 
 func main() {
 	fmt.Println("Go lang server started...")
-	foundation.Foundation()
 	controlflow.ContrilFlow()
+	foundation.Foundation()
 }
