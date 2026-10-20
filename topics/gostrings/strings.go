@@ -1,7 +1,7 @@
-package strings
+package gostrings
 
 import "fmt"
 
-func Strings() {
+func GoStrings() {
 	fmt.Println("Go Strings...")
 }

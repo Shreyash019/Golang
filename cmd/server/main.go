@@ -1,14 +1,11 @@
 package main
 
 import (
-	"fmt"
-
-	"shreyash.in/golang/topics/controlflow"
-	"shreyash.in/golang/topics/foundation"
+	"shreyash.in/golang/topics/gostrings"
 )
 
 func main() {
-	fmt.Println("Go lang server started...")
-	controlflow.ContrilFlow()
-	foundation.Foundation()
+	// controlflow.ContrilFlow()
+	// foundation.Foundation()
+	gostrings.GoStrings()
 }
