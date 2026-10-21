@@ -45,4 +45,6 @@ func GoStrings() {
 	s1 := string([]byte{0xff, 0xfe})
 
 	fmt.Println(utf8.ValidString(s1)) // false
+	fmt.Println(message[1])
+	fmt.Printf("Decoded string: %c\n", message[1])
 }
