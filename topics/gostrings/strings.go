@@ -47,4 +47,22 @@ func GoStrings() {
 	fmt.Println(utf8.ValidString(s1)) // false
 	fmt.Println(message[1])
 	fmt.Printf("Decoded string: %c\n", message[1])
+
+	// Verifying string
+	s1v := "Hello, How are you?"
+	s2v := string([]byte{0xff})
+	r1v, size1v := utf8.DecodeRuneInString(s1v)
+	r2v, size2v := utf8.DecodeRuneInString(s2v)
+	fmt.Printf("%U, %U\n", r1v, r2v)
+	fmt.Println(size1v, size2v)
+	s11s := "नमस्ते"
+
+	for i, r := range s11s {
+		fmt.Printf("index=%d rune=%c codepoint=%U\n", i, r, r)
+	}
+	s12s := "A😊B"
+
+	for i, r := range s12s {
+		fmt.Printf("%d %c %U\n", i, r, r)
+	}
 }
