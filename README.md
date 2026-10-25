@@ -176,7 +176,7 @@ Priority (from the syllabus): 🔴 must master · 🟠 important · 🟡 good to
 ### Phase 1 — Getting Started
 | # | Topic | Pri | Covers | Status | Link | Last session | Notes / gaps |
 |---|---|---|---|---|---|---|---|
-| 01 | **Go fundamentals & toolchain**: Go's philosophy, installation, the `go` command (build, run, test, vet, install, doc), gofmt, project structure, `main`, packages, imports, comments & doc comments | 🔴 | 1, 42 | ⬜ | | | |
+| 01 | **Go fundamentals & toolchain**: Go's philosophy, installation, the `go` command (build, run, test, vet, install, doc), gofmt, project structure, `main`, packages, imports, comments & doc comments | 🔴 | 1, 42 | 📖 | [notes](topics/01-go-fundamentals-and-toolchain/go-fundamentals-and-toolchain.md) | 2026-10-25 | |
 | 02 | **Variables & constants**: `var`, `:=`, `const`, `iota`, untyped constants, zero values, type inference, scope, shadowing | 🔴 | 2 | ⬜ | | | |
 | 03 | **Basic types & operators**: bool, integers, floats, complex, string, byte, rune, conversions, overflow, a first look at aliases vs defined types; arithmetic, comparison, logical, bitwise, assignment, `++`/`--`, precedence | 🔴 | 3, 4 | ⬜ | | | |
 | 04 | **Control flow**: `if` (with init), `for` (all forms), `range` incl. range-over-int, `switch`, `fallthrough`, `break`/`continue`, labels, `goto` | 🔴 | 5 | ⬜ | | | |
