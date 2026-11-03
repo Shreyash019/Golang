@@ -66,4 +66,4 @@ The full rules live in `AGENTS.md` at the repo root. **Read `AGENTS.md` first an
 ## Resume / revise / mock interview (§10)
 - **Resume:** read the file, the Q&A log and the stuck patterns. Start `Session N+1` on the gaps. Don't repeat questions already scored ≥ 4.
 - **Revise:** recap from the Cheat Sheet, then 3 questions on the gaps. Set `🔁` if the average is < 3, or `✅` if it's ≥ 4 on a 🔁 topic.
-- **Mock interview:** one stage at a time, as the interviewer. Log it in `topics/39-go-interview-practice/` with per-stage scores and a hire signal.
+- **Mock interview:** one stage at a time, as the interviewer. Log it in `topics/49-go-interview-practice/` with per-stage scores and a hire signal.

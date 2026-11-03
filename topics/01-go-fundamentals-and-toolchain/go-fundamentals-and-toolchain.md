@@ -2,12 +2,12 @@
 
 > **Level:** Foundation
 > **Prerequisites:** none. This is the starting point.
-> **Related:** 02 Variables & constants · 05 Functions, closures & defer (`defer`) · 15 Packages, modules & encapsulation (visibility, `internal/`, dependencies in depth) · 18 Testing · 21 Goroutines (why `main` doesn't wait)
+> **Related:** 02 Variables & constants · 05 Functions, closures & defer (`defer`) · 16 Packages, modules & encapsulation (visibility, `internal/`, dependencies in depth) · 19 Testing · 22 Goroutines (why `main` doesn't wait) · 46 Shipping Go (containers, CI, releases)
 > **Go version:** go1.27.1 (darwin/arm64) · everything here applies from Go 1.22 on, and version-specific behaviour is marked
 > **Targets stuck patterns:** none recorded yet (no diagnostic). Likely targets: confusion about packages and `main`, and learning syntax without a build/test loop
 > **Started:** 2026-10-25 · **Status:** 📖 In progress
 >
-> **Syllabus items covered:** 1 (Go philosophy, installation, the `go` command, project structure, `main`, packages, imports, comments) and 42 (gofmt, `go vet`, `go test`, `go build`, `go run`, `go install`, `go doc`).
+> **Syllabus items covered:** 1 (Go philosophy, installation, the `go` command, project structure, `main`, packages, imports, comments) and 42 (gofmt, `go vet`, `go test`, `go build`, `go run`, `go install`, `go doc`), plus a first table-driven test (§6.10) so the exercises have a feedback loop from day one.
 > **Run the code:** `cd topics/01-go-fundamentals-and-toolchain && make examples` · exercises in [`exercises/`](exercises/README.md)
 
 ---
@@ -87,8 +87,8 @@ Three ideas to hold on to:
 | **Module** | A tree of packages released and versioned together, defined by a `go.mod` at its root. Its module path is the prefix of all its import paths | You import packages, never modules |
 | **Command** / **main package** | A package named `main` with a `func main()`. `go build` produces an executable from it | A `func main` in any other package is just an ordinary unexported function that is never called |
 | **Library package** | Any non-main package. Built for importing, and `go build` on it only checks that it compiles | — |
-| **Exported identifier** | Starts with an upper-case letter (`order.Service`) and is visible to importers. Lower-case is package-private | There are no `public`/`private` keywords. *(Full treatment in 15.)* |
-| **`internal/` directory** | Packages under `.../internal/...` can only be imported by code rooted at the parent of `internal` | It's not a naming convention: the go command enforces it. *(Full treatment in 15.)* |
+| **Exported identifier** | Starts with an upper-case letter (`order.Service`) and is visible to importers. Lower-case is package-private | There are no `public`/`private` keywords. *(Full treatment in 16.)* |
+| **`internal/` directory** | Packages under `.../internal/...` can only be imported by code rooted at the parent of `internal` | It's not a naming convention: the go command enforces it. *(Full treatment in 16.)* |
 | **`init()` function** | `func init()` with no arguments or results. Runs automatically after the package's variables are initialized, before `main`. A file may have several | It can't be called or referenced, and it's not a constructor |
 | **Toolchain** | The `go` command + compiler + linker + standard library of one Go release (e.g. go1.27.1) | Since Go 1.21 the `go` command can download and switch toolchains automatically (`GOTOOLCHAIN`) |
 | **GOROOT** | Where the toolchain and standard library are installed | You almost never set it yourself |
@@ -134,8 +134,8 @@ Three ideas to hold on to:
 | `gofmt -l -w .` / `go fmt ./...` | Rewrites code into the one canonical format | black / google-java-format |
 | `go doc <pkg>[.Symbol]` | Prints documentation from doc comments, on the command line | `pydoc`, javadoc |
 | `go install <pkg>[@version]` | Builds a command and puts it in `GOBIN` (`~/go/bin`). With `@version`, installs any published tool without touching your module | `pipx install`, no Maven equivalent |
-| `go get <module>@<version>` | Adds or changes a dependency in `go.mod`. `go get -tool` (Go 1.24+) records a dev tool. *(Full treatment in 15.)* | `pip install` + lockfile, adding a `<dependency>` |
-| `go mod tidy` | Makes `go.mod`/`go.sum` match the imports actually used. *(Full treatment in 15.)* | `poetry lock`, `mvn dependency:analyze` |
+| `go get <module>@<version>` | Adds or changes a dependency in `go.mod`. `go get -tool` (Go 1.24+) records a dev tool. *(Full treatment in 16.)* | `pip install` + lockfile, adding a `<dependency>` |
+| `go mod tidy` | Makes `go.mod`/`go.sum` match the imports actually used. *(Full treatment in 16.)* | `poetry lock`, `mvn dependency:analyze` |
 | `go list` | Prints package metadata (a scriptable view of the build graph) | `mvn dependency:tree` |
 | `go env` | Prints/sets toolchain settings | — |
 | `go version -m <binary>` | Shows the build info recorded inside a binary | — |
@@ -238,7 +238,7 @@ Why: the imported package `greet` is completely initialized (variables, then `in
 **Consequences that matter in real code:**
 - `init()` runs at **import time**, in every program and test binary that imports the package, so a slow or failing `init` (reading files, connecting to a database) taxes and breaks everything downstream. That's why the idiom is to keep `init` trivial (§8).
 - A variable whose initializer uses values that `init` sets later sees their **zero values** (§7.6, exercise E2).
-- Because `main` returning ends the process, a server's `main` must block (e.g. on `http.ListenAndServe` or a shutdown signal) and wait for background work to finish. *(Goroutines in depth: 21. Graceful shutdown: 37.)*
+- Because `main` returning ends the process, a server's `main` must block (e.g. on `http.ListenAndServe` or a shutdown signal) and wait for background work to finish. *(Goroutines in depth: 22. Graceful shutdown: 38.)*
 
 ### 5.4 Packages, import paths and package names
 
@@ -259,13 +259,13 @@ import "github.com/google/uuid"
 - All non-test files in a directory must declare the same package name (tests may also use `<name>_test`, the "external test package").
 - An unused import is a compile error.
 - Import cycles are compile errors (§7.5). Two packages that need each other usually mean the shared part belongs in a third package.
-- Packages under an `internal/` directory can only be imported from inside the tree rooted at `internal`'s parent (§7.12). *(Full treatment in 15.)*
+- Packages under an `internal/` directory can only be imported from inside the tree rooted at `internal`'s parent (§7.12). *(Full treatment in 16.)*
 - Directories named `testdata`, and directories or files starting with `.` or `_`, are ignored by the go command (exercise E5 implements this rule).
 
-**Visibility is per package, not per file:** every identifier, exported or not, is visible in all files of the package. Exported (capitalized) identifiers are also visible to importers. *(Full treatment in 15.)*
+**Visibility is per package, not per file:** every identifier, exported or not, is visible in all files of the package. Exported (capitalized) identifiers are also visible to importers. *(Full treatment in 16.)*
 
 ### 5.5 `go.mod` and `go.sum`, just enough for now
-*(Dependencies, versions, `go get` and `go mod tidy` in depth: 15.)*
+*(Dependencies, versions, `go get` and `go mod tidy` in depth: 16.)*
 
 ```
 module github.com/Shreyash019/Golang/topics/01-go-fundamentals-and-toolchain   ← module path: prefix of every import path in this module
@@ -542,6 +542,66 @@ vetme/main.go:9:2: fmt.Println call has possible Printf formatting directive %d
 ```
 **Takeaway:** formatting isn't up for discussion (gofmt), and `go vet` is a free reviewer. Run both before every commit. `make check` and `make verify` in this repo do.
 
+### 6.10 Your first test: table-driven, with subtests
+*(Added 2026-11-03: every exercise in this guide is a test from topic 01 on, so the basics of writing and reading one come first. Testing in depth: 19.)*
+
+A test is a function `TestXxx(t *testing.T)` in a `_test.go` file next to the code. Go has no assertion library: you compare `got` with `want` and call `t.Errorf` (marks the test failed, keeps going) or `t.Fatalf` (marks it failed and stops this test). [`internal/temperature/temperature_test.go`](internal/temperature/temperature_test.go):
+
+```go
+func TestCelsiusFahrenheit(t *testing.T) {
+	tests := []struct {
+		name string
+		in   Celsius
+		want Fahrenheit
+	}{
+		{name: "freezing", in: 0, want: 32},
+		{name: "boiling", in: 100, want: 212},
+		{name: "same on both scales", in: -40, want: -40},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.in.Fahrenheit()
+			if got != tt.want {
+				t.Errorf("Celsius(%v).Fahrenheit() = %v, want %v", tt.in, got, tt.want)
+			}
+		})
+	}
+}
+```
+Passing, real output (`-v` lists each subtest; spaces in subtest names become `_`):
+```
+$ go test -v -run TestCelsiusFahrenheit ./internal/temperature
+=== RUN   TestCelsiusFahrenheit
+=== RUN   TestCelsiusFahrenheit/freezing
+=== RUN   TestCelsiusFahrenheit/boiling
+=== RUN   TestCelsiusFahrenheit/same_on_both_scales
+--- PASS: TestCelsiusFahrenheit (0.00s)
+    --- PASS: TestCelsiusFahrenheit/freezing (0.00s)
+    --- PASS: TestCelsiusFahrenheit/boiling (0.00s)
+    --- PASS: TestCelsiusFahrenheit/same_on_both_scales (0.00s)
+PASS
+```
+**Predict:** if `Fahrenheit` had a bug, `c*9/5 - 32` instead of `+ 32`, what would `go test` print?
+<details><summary>Output</summary>
+
+Real output from a copy of the package with that bug:
+```
+$ go test -run TestCelsiusFahrenheit ./internal/temperature
+--- FAIL: TestCelsiusFahrenheit (0.00s)
+    --- FAIL: TestCelsiusFahrenheit/freezing (0.00s)
+        temperature_test.go:21: Celsius(0).Fahrenheit() = -32, want 32
+    --- FAIL: TestCelsiusFahrenheit/boiling (0.00s)
+        temperature_test.go:21: Celsius(100).Fahrenheit() = 148, want 212
+    --- FAIL: TestCelsiusFahrenheit/same_on_both_scales (0.00s)
+        temperature_test.go:21: Celsius(-40).Fahrenheit() = -104, want -40
+FAIL
+```
+</details>
+
+**How to read a failure**, in this order: (1) *which* test and subtest (`TestCelsiusFahrenheit/boiling`); (2) *where* the check is (`temperature_test.go:21`); (3) the message, which by convention reads `Func(input) = got, want want` (Go Code Review Comments, "Useful Test Failures"). All three cases failed, so the bug is in the shared formula, not an edge case. Rerun one subtest alone with `-run 'TestCelsiusFahrenheit/boiling'` while you fix it.
+
+**Takeaway:** the table is the specification and the loop is the test. `t.Run` gives each case a name you can run on its own, and `t.Errorf` lets every case report in a single run. This is the loop for every exercise in this guide: read the failing message, change the code, rerun.
+
 ## 7. Gotchas
 
 Every reproduction below was run with go1.27.1 in a scratch module (`example.com/gotchas`), and the output is copied from the terminal.
@@ -557,7 +617,7 @@ Every reproduction below was run with go1.27.1 in a scratch module (`example.com
 | 7.7 | `os.Exit` / `log.Fatal` skip deferred calls | Cleanup never runs | Return errors to `main`, exit in one place |
 | 7.8 | `// go:embed` (with a space) | Silently empty variable; vet is quiet | `//go:embed`, no space |
 | 7.9 | `go.mod` needs a newer Go | Toolchain download, or an error with `GOTOOLCHAIN=local` | Upgrade Go, or lower the `go` line deliberately |
-| 7.10 | `main` returns while goroutines run | Their output and work disappear | Wait for them explicitly (21, 23) |
+| 7.10 | `main` returns while goroutines run | Their output and work disappear | Wait for them explicitly (22, 24) |
 | 7.11 | `go build ./x` for a command | Binary written into the current directory (or an error if a directory has that name) | `go build -o bin/x ./cmd/x` |
 | 7.12 | Importing someone else's `internal/` | `use of internal package … not allowed` | It's private by design: use the public API or move the code |
 
@@ -623,7 +683,7 @@ package example.com/gotchas/a
 	imports example.com/gotchas/b from a.go
 	imports example.com/gotchas/a from b.go: import cycle not allowed
 ```
-**Why:** the dependency graph must be acyclic so packages can be compiled and initialized in order (§5.2, §5.3). Java allows cycles between packages and Python sometimes tolerates them, so code ported from either often hits this. **Fix:** move what both need into a lower-level package, or have the lower package define a small interface that the higher one implements. *(Interfaces: 12. Package design: 15, 16.)*
+**Why:** the dependency graph must be acyclic so packages can be compiled and initialized in order (§5.2, §5.3). Java allows cycles between packages and Python sometimes tolerates them, so code ported from either often hits this. **Fix:** move what both need into a lower-level package, or have the lower package define a small interface that the higher one implements. *(Interfaces: 12. Package design: 16, 17.)*
 
 ### 7.6 Package variables are initialized before `init()` runs
 *(Exercise E2 is this bug.)*
@@ -696,7 +756,7 @@ main returns
 main returns
 main returns
 ```
-**Why:** §5.3: when `main` returns, the process exits. The goroutine *may* print on some runs, but nothing guarantees it, which makes this worse than never printing. **Fix:** wait explicitly (`sync.WaitGroup`, channels, `errgroup`). *(Full treatment in 21, 23, 26.)*
+**Why:** §5.3: when `main` returns, the process exits. The goroutine *may* print on some runs, but nothing guarantees it, which makes this worse than never printing. **Fix:** wait explicitly (`sync.WaitGroup`, channels, `errgroup`). *(Full treatment in 22, 24, 27.)*
 
 ### 7.11 Where `go build` puts the binary
 `go build ./cmd/api` writes `./api` into the **current directory**. In the scratch module, `go build ./unused` failed with `go: build output "unused" already exists and is a directory`, because the binary's name clashed with the package's own directory. **Fix:** be explicit (`go build -o bin/api ./cmd/api`), use `go run` while developing, and keep `bin/` in `.gitignore`. Library packages produce no output file.
@@ -707,7 +767,7 @@ $ go build ./shipping
 package example.com/gotchas/shipping
 	shipping/ship.go:3:8: use of internal package example.com/gotchas/billing/internal/tax not allowed
 ```
-**Why:** `billing/internal/tax` can only be imported by code under `billing/`. That lets a team change it without breaking anyone else. **Fix:** respect it: use `billing`'s public API, or move `tax` up a level if it really is shared. *(Full treatment in 15.)*
+**Why:** `billing/internal/tax` can only be imported by code under `billing/`. That lets a team change it without breaking anyone else. **Fix:** respect it: use `billing`'s public API, or move `tax` up a level if it really is shared. *(Full treatment in 16.)*
 
 ## 8. Idiomatic vs Non-Idiomatic
 
@@ -804,7 +864,7 @@ Start with the identifier's name, write full sentences, say what the caller need
 | Concept | Python (FastAPI) | Java (Spring Boot) | Go | What doesn't translate |
 |---|---|---|---|---|
 | Unit of code | Module = file, package = dir with `__init__.py` | Class per file, package = dir | **Package = directory**, any number of files | Don't create a package per type |
-| Visibility | Convention (`_private`) | `public`/`private`/`protected` keywords | Capitalization: `Exported` vs `unexported`, at package level | There's no class-private or protected. *(15)* |
+| Visibility | Convention (`_private`) | `public`/`private`/`protected` keywords | Capitalization: `Exported` vs `unexported`, at package level | There's no class-private or protected. *(16)* |
 | Entry point | `if __name__ == "__main__":`, `uvicorn main:app` | `public static void main`, `SpringApplication.run` | `package main` + `func main()` | The framework doesn't own `main`. You do |
 | Startup wiring | FastAPI `Depends`, decorators | Component scan, `@Autowired`, `@Configuration` | Plain code in `main`/`run`: construct, pass in | No container, no reflection-driven wiring |
 | Static init | Module top-level code runs on import | `static { }` blocks, bean init | Package variables, then `init()` | Same risks: side effects at import time. Keep `init` trivial |
@@ -814,7 +874,7 @@ Start with the identifier's name, write full sentences, say what the caller need
 | Artifact | Wheel/source + interpreter | JAR + JVM | Native static binary | No runtime to install on the server |
 | Formatting | black/ruff (configurable) | IDE/google-java-format | `gofmt` (not configurable) | No style debates in review |
 | Docs | Docstrings, Sphinx | Javadoc `/** @param */` | `//` doc comments, `go doc`, pkg.go.dev | No tags like `@param`/`@return`: write sentences |
-| Tests | pytest (separate tool) | JUnit + Maven Surefire | `go test`, built in; `_test.go` files next to the code | No test runner to configure. *(18)* |
+| Tests | pytest (separate tool) | JUnit + Maven Surefire | `go test`, built in; `_test.go` files next to the code | No test runner to configure. *(19)* |
 | Linting | ruff/pylint/mypy | ErrorProne/SpotBugs/Checkstyle | `go vet` (built in) + staticcheck/golangci-lint | — |
 
 **Habits to unlearn in this topic** (AGENTS.md §1.1):
@@ -822,7 +882,7 @@ Start with the identifier's name, write full sentences, say what the caller need
 - **`utils/`, `common/`, one class per file, deep package trees** → small packages named for what they provide, several files each, a flat layout until it hurts (§8.2).
 - **Framework-owned startup (`@SpringBootApplication`, decorators, auto-wiring)** → `main` builds the dependencies and passes them in (§8.1). It's more lines, and you can read every one of them.
 - **Static/module-level initialization doing real work** → explicit setup in `main` (§7.6, E2).
-- **Exceptions to the top-level handler (`log.Fatal` everywhere)** → return errors up to `run`, exit once (§7.7). *(Errors in depth: 17.)*
+- **Exceptions to the top-level handler (`log.Fatal` everywhere)** → return errors up to `run`, exit once (§7.7). *(Errors in depth: 18.)*
 - **Getters/setters and `IThing`/`ThingImpl`** → exported fields or `Thing()` methods, concrete types (E4).
 
 ## 10. Production Lens
@@ -831,9 +891,9 @@ Start with the identifier's name, write full sentences, say what the caller need
 - **Identify every binary.** Stamp the release with `-ldflags "-X main.version=$(git describe --tags)"` (§6.2), and log `debug.ReadBuildInfo` data (commit, `vcs.modified`) at startup or expose it on a `/version` endpoint (§6.7). `go version -m` answers "what's running?" from the binary itself.
 - **Containers.** `CGO_ENABLED=0 go build` gives a static binary that runs on `scratch` or distroless images (a few MB instead of hundreds). Use a multi-stage Dockerfile: build with the `golang` image, copy only the binary. Cross-compiling (§5.6) means a Mac laptop can build the Linux image's binary directly.
 - **Startup cost and safety.** Import-time work (`init`, heavy package variables) runs in every binary *and every test binary* that imports the package. Keep startup explicit in `main`, so tests and tools that import a package don't connect to a database.
-- **CI quality gate.** `gofmt -l .` is empty → `go vet ./...` → `go test -race ./...` → a linter (`staticcheck` or `golangci-lint`) → `govulncheck ./...` (the Go team's vulnerability scanner, `golang.org/x/vuln/cmd/govulncheck`, which reports only vulnerabilities your code actually reaches). Pin tool versions with `go get -tool` (Go 1.24+) and run them with `go tool <name>`, so everyone uses the same versions.
+- **CI quality gate.** `gofmt -l .` is empty → `go vet ./...` → `go test -race ./...` → a linter (`staticcheck` or `golangci-lint`) → `govulncheck ./...` (the Go team's vulnerability scanner, `golang.org/x/vuln/cmd/govulncheck`, which reports only vulnerabilities your code actually reaches). Pin tool versions with `go get -tool` (Go 1.24+) and run them with `go tool <name>`, so everyone uses the same versions. *(Containers, CI and releases in depth: 46.)*
 - **Build cache in CI.** Cache `GOCACHE` and `GOMODCACHE` between runs: incremental builds and `(cached)` tests turn minutes into seconds (§5.2).
-- **Testing `main`.** Keep `main` trivial and test `run`. *(Testing in depth: 18.)*
+- **Testing `main`.** Keep `main` trivial and test `run`. *(Testing in depth: 19.)*
 
 ### Senior review: a realistic first service
 
@@ -871,7 +931,7 @@ Review comments a senior Go engineer would leave:
 1. **`init` opens the database.** Every test and tool importing this package now needs a database at import time, and a failure kills the process before `main` can log context. Move it into `run`, and return the error.
 2. **Global `db`.** Hidden dependency, impossible to swap in tests. Construct it in `run` and pass it to the handlers' constructor.
 3. **`utils.OrdersHandler`.** `utils` says nothing. Orders handlers belong in a package named for what it does (`internal/httpapi`, or `internal/order` + `internal/httpapi`).
-4. **`log.Fatal(http.ListenAndServe(...))`.** No timeouts (`http.Server{ReadHeaderTimeout: …}`), no graceful shutdown, and deferred cleanup can't run. *(HTTP in depth: 33. Graceful shutdown: 37.)*
+4. **`log.Fatal(http.ListenAndServe(...))`.** No timeouts (`http.Server{ReadHeaderTimeout: …}`), no graceful shutdown, and deferred cleanup can't run. *(HTTP in depth: 34. Graceful shutdown: 38.)*
 5. **Hard-coded `:8080`.** Make it configurable, with a default.
 6. **No version info at startup.** Log the build info so on-call engineers know which commit is running.
 7. **The blank driver import is in `main`.** ✅ That's the right place (Go Code Review Comments, "Import Blank").
