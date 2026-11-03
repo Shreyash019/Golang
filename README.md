@@ -6,7 +6,7 @@ Each topic is a folder with:
 - **deep-dive notes**: internals with diagrams, a runnable example for every concept with its real output, gotchas, idiomatic vs non-idiomatic code, and production and interview angles;
 - **test-driven exercises** that build up from *predict the output* to *a mini-project*, with reference solutions.
 
-> This repo is also my own learning log: the progress columns below and the 🗣️ Q&A section at the end of each topic file record my sessions with an AI tutor.
+> This repo is also my own learning log: the progress columns below and each topic's Q&A log (`theory/<slug>-qa.md`) record my sessions with an AI tutor.
 
 ---
 
@@ -29,7 +29,7 @@ Each topic is a folder with:
 | 9. Backend Engineering | Production services, databases, REST API design, security, resilience, observability, messaging, gRPC, shipping to production |
 | 10. Senior & Capstone | System design, a capstone service, mock interviews |
 
-3. Within a phase, the topic number is the suggested order. Each topic file lists its *Prerequisites* at the top.
+3. Within a phase, the topic number is the suggested order. Each topic's notes list its *Prerequisites* at the top.
 
 ### Why topics are grouped
 Many Go concepts are tightly linked: closures and `defer`, arrays and slices, interfaces and polymorphism, packages and encapsulation. Learning them as separate items is a common way to get confused, so related items share one topic, and the **Covers** column shows which items of the 60-item syllabus (listed in [Syllabus coverage](#-syllabus-coverage): items 1–50 are the Go language and toolchain, 51–60 are iterators and backend engineering) each topic includes.
@@ -77,13 +77,17 @@ golang/
 ├── AGENTS.md                       ← rules the AI tutors follow (the single source of truth)
 ├── templates/
 │   ├── topic-template.md           ← structure every topic's notes follow
+│   ├── topic-qa-template.md        ← structure of every topic's Q&A log
 │   └── topic/                      ← scaffold module every topic starts from
 ├── scripts/new-topic.sh            ← creates a topic module from the scaffold
 └── topics/
     └── NN-topic-slug/              ← each topic is its own Go module: runs on its own
         ├── go.mod                  ← github.com/Shreyash019/Golang/topics/NN-topic-slug
         ├── Makefile                ← `make` lists every command
-        ├── topic-slug.md           ← notes (top) + Q&A log (bottom)
+        ├── README.md               ← index: links to the notes, the Q&A log and the exercises
+        ├── theory/
+        │   ├── README.md           ← the notes (sections 1–14)
+        │   └── <slug>-qa.md        ← Q&A log: sessions, scores, exercise reviews, stuck points
         ├── cmd/examples/           ← runs the worked examples from the notes
         ├── internal/examples/      ← the worked examples, output verified by tests
         └── exercises/
@@ -100,9 +104,9 @@ golang/
 
 There's no `go.mod` at the repo root: every topic builds, runs and tests on its own, using only the standard library (`net/http`, `encoding/json`, `log/slog`, `context`, …) unless a topic is about a specific package (the Postgres driver in 39, OpenTelemetry in 43, gRPC in 45, …). Those topics run real services with Docker in integration tests that skip when Docker isn't available.
 
-Folder names come from the topic's **bold short name**: **Arrays & slices** (06) → `topics/06-arrays-and-slices/arrays-and-slices.md`.
+Folder names come from the topic's **bold short name**: **Arrays & slices** (06) → `topics/06-arrays-and-slices/`, with notes in `theory/README.md` and the Q&A log in `theory/arrays-and-slices-qa.md`.
 
-### How each topic file is organised
+### How each topic's notes are organised (`theory/README.md`)
 | Section | Read it for |
 |---|---|
 | 1. TL;DR | The short version. Read it first, and reread it for revision |
@@ -118,7 +122,7 @@ Folder names come from the topic's **bold short name**: **Arrays & slices** (06)
 | 11. Interview Lens | Common questions and what a strong answer shows |
 | 12. Exercises | E1–E5 links, commands and status/scores |
 | 13. Cheat Sheet | 10 lines to reread |
-| 🗣️ Q&A Discussion | Every session: answers, scores, exercise reviews, where I got stuck |
+| 🗣️ Q&A Discussion | A link to the Q&A log, `theory/<slug>-qa.md`: every session's answers, scores, exercise reviews and stuck points |
 
 **First read:** sections 1–4, then predict your way through 5–7 (cover the `Output` blocks), then do E1–E2, read 8–11, do E3–E5, then the Q&A.
 **Revision:** the TL;DR, the Cheat Sheet, then *Session summary → gaps* and the *Stuck* entries in the Q&A log.
@@ -128,7 +132,7 @@ The same commands work in all three tools:
 
 | Command | What happens |
 |---|---|
-| `diagnose me` | Placement session: reads my code, asks questions, writes `topics/00-diagnostic/diagnostic.md` with why I get stuck + a learning plan |
+| `diagnose me` | Placement session: reads my code, asks questions, writes `topics/00-diagnostic/theory/README.md` with why I get stuck + a learning plan |
 | `/learn-go <topic>` or `learn <topic>` | Creates the topic folder with full notes + verified exercises, then starts the Q&A |
 | `check E3` (or `check <topic> E3`) | Runs `make check` (gofmt, vet, `go test -race`) on my solution, reviews it like a senior Go reviewer, scores it /5 |
 | `I'm stuck on E3` / `hint` | Hint ladder: what did you try → where to look → smaller example → shape of the solution. Never the answer unless I ask |
@@ -193,9 +197,9 @@ Priority (from the syllabus): 🔴 must master · 🟠 important · 🟡 good to
 ### Phase 1 — Getting Started
 | # | Topic | Pri | Covers | Status | Link | Last session | Notes / gaps |
 |---|---|---|---|---|---|---|---|
-| 01 | **Go fundamentals & toolchain**: Go's philosophy, installation, the `go` command (build, run, test, vet, install, doc), gofmt, project structure, `main`, packages, imports, comments & doc comments, build tags & `//go:embed`, your first table-driven test | 🔴 | 1, 42 | 📖 | [notes](topics/01-go-fundamentals-and-toolchain/go-fundamentals-and-toolchain.md) | 2026-10-25 | |
-| 02 | **Variables & constants**: `var`, `:=`, `const`, `iota`, untyped constants, zero values, type inference, scope, shadowing | 🔴 | 2 | 📖 | [notes](topics/02-variables-and-constants/variables-and-constants.md) | 2026-11-03 | |
-| 03 | **Basic types & operators**: bool, integers, floats, complex, string, byte, rune, conversions, overflow, a first look at aliases vs defined types; arithmetic, comparison, logical, bitwise, assignment, `++`/`--`, precedence | 🔴 | 3, 4 | 📖 | [notes](topics/03-basic-types-and-operators/basic-types-and-operators.md) | 2026-11-03 | |
+| 01 | **Go fundamentals & toolchain**: Go's philosophy, installation, the `go` command (build, run, test, vet, install, doc), gofmt, project structure, `main`, packages, imports, comments & doc comments, build tags & `//go:embed`, your first table-driven test | 🔴 | 1, 42 | 📖 | [notes](topics/01-go-fundamentals-and-toolchain/theory/README.md) | 2026-10-25 | |
+| 02 | **Variables & constants**: `var`, `:=`, `const`, `iota`, untyped constants, zero values, type inference, scope, shadowing | 🔴 | 2 | 📖 | [notes](topics/02-variables-and-constants/theory/README.md) | 2026-11-03 | |
+| 03 | **Basic types & operators**: bool, integers, floats, complex, string, byte, rune, conversions, overflow, a first look at aliases vs defined types; arithmetic, comparison, logical, bitwise, assignment, `++`/`--`, precedence | 🔴 | 3, 4 | 📖 | [notes](topics/03-basic-types-and-operators/theory/README.md) | 2026-11-03 | |
 | 04 | **Control flow**: `if` (with init), `for` (all forms), `range` incl. range-over-int, `switch`, `fallthrough`, `break`/`continue`, labels, `goto` | 🔴 | 5 | ⬜ | | | |
 | 05 | **Functions, closures & defer**: declaration, parameters, multiple & named returns, variadics, anonymous functions, first-class & higher-order functions, closures, recursion, `defer`, a first look at returning `error` | 🔴 | 6, 7 | ⬜ | | | |
 

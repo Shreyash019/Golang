@@ -8,7 +8,7 @@
 > **Started:** 2026-10-25 · **Status:** 📖 In progress
 >
 > **Syllabus items covered:** 1 (Go philosophy, installation, the `go` command, project structure, `main`, packages, imports, comments) and 42 (gofmt, `go vet`, `go test`, `go build`, `go run`, `go install`, `go doc`), plus a first table-driven test (§6.10) so the exercises have a feedback loop from day one.
-> **Run the code:** `cd topics/01-go-fundamentals-and-toolchain && make examples` · exercises in [`exercises/`](exercises/README.md)
+> **Run the code:** `cd topics/01-go-fundamentals-and-toolchain && make examples` · exercises in [`exercises/`](../exercises/README.md)
 
 ---
 
@@ -200,7 +200,7 @@ Initialization is fully specified ("Program initialization and execution" in the
 
 Since **Go 1.21** the order *between* packages is fully specified too: the packages, sorted by import path, are initialized by repeatedly picking the first one whose imports are all initialized. Before 1.21 the order between unrelated packages was left to the implementation.
 
-**Worked example** ([`cmd/init-order/main.go`](cmd/init-order/main.go), which imports [`internal/greet`](internal/greet/greet.go)):
+**Worked example** ([`cmd/init-order/main.go`](../cmd/init-order/main.go), which imports [`internal/greet`](../internal/greet/greet.go)):
 
 ```go
 var (
@@ -321,10 +321,10 @@ Exercise **E3** has you parse exactly this format.
 
 ## 6. Worked Examples
 
-Every example below is real code in this module. `make examples` lists the registered ones, `make example N=<name>` runs one, and the Example tests in [`internal/examples/examples_output_test.go`](internal/examples/examples_output_test.go) fail if the output shown here ever stops being true.
+Every example below is real code in this module. `make examples` lists the registered ones, `make example N=<name>` runs one, and the Example tests in [`internal/examples/examples_output_test.go`](../internal/examples/examples_output_test.go) fail if the output shown here ever stops being true.
 
 ### 6.1 The smallest real program: `main` + `run`
-[`cmd/version/main.go`](cmd/version/main.go)
+[`cmd/version/main.go`](../cmd/version/main.go)
 
 ```go
 package main
@@ -345,7 +345,7 @@ func run(w io.Writer) { fmt.Fprintln(w, "version", version) }
 $ go run ./cmd/version
 version dev
 ```
-**Takeaway:** keep `main` to a line or two that hands the real work to a function taking its inputs (`args`, `io.Writer`s, later a `context.Context`) and returning an `error` or an exit code. `main` itself can't be tested; `run` can, as [`cmd/version/main_test.go`](cmd/version/main_test.go) shows with an Example test. This is the pattern for every command in this repo (exercises E4 and E5).
+**Takeaway:** keep `main` to a line or two that hands the real work to a function taking its inputs (`args`, `io.Writer`s, later a `context.Context`) and returning an `error` or an exit code. `main` itself can't be tested; `run` can, as [`cmd/version/main_test.go`](../cmd/version/main_test.go) shows with an Example test. This is the pattern for every command in this repo (exercises E4 and E5).
 
 ### 6.2 Stamping a version at build time
 Same program, different linker flag:
@@ -356,7 +356,7 @@ version 1.4.2
 **Takeaway:** `-X importpath.name=value` overwrites a package-level `string` variable at link time. CI pipelines use it to bake the git tag into the binary. It **fails silently**: with a misspelled name, or with `version` declared as a `const`, the build succeeds and the old value is printed (both checked with real runs). Verify the stamp in CI by running `./app -version`. `debug.ReadBuildInfo` (§6.7) gives the commit without any flags.
 
 ### 6.3 Import path vs package name
-[`internal/examples/importpath.go`](internal/examples/importpath.go) · `make example N=import-path-vs-package-name`
+[`internal/examples/importpath.go`](../internal/examples/importpath.go) · `make example N=import-path-vs-package-name`
 
 ```go
 import (
@@ -381,7 +381,7 @@ Why: the code uses `rand.`, the package clause name, even though the path ends i
 </details>
 
 ### 6.4 A blank import that does real work
-[`internal/examples/blankimport.go`](internal/examples/blankimport.go) · `make example N=blank-import-registers`
+[`internal/examples/blankimport.go`](../internal/examples/blankimport.go) · `make example N=blank-import-registers`
 
 ```go
 import (
@@ -415,7 +415,7 @@ This is how `database/sql` drivers register themselves too (`import _ "github.co
 </details>
 
 ### 6.5 Build constraints: different files for different builds
-[`cmd/buildtags/`](cmd/buildtags/): [`debug_on.go`](cmd/buildtags/debug_on.go) starts with `//go:build debug` and [`debug_off.go`](cmd/buildtags/debug_off.go) with `//go:build !debug`. Each defines `const debug` and `func mode()`.
+[`cmd/buildtags/`](../cmd/buildtags/): [`debug_on.go`](../cmd/buildtags/debug_on.go) starts with `//go:build debug` and [`debug_off.go`](../cmd/buildtags/debug_off.go) with `//go:build !debug`. Each defines `const debug` and `func mode()`.
 
 ```
 $ go run ./cmd/buildtags
@@ -426,7 +426,7 @@ debug=true mode=verbose logging, pprof enabled
 **Takeaway:** the toolchain picks files, not `if` statements. The same mechanism selects OS-specific code by file name alone: `file_linux.go`, `file_windows_amd64.go`, and `_test.go`. The `//go:build` line must come before the `package` clause, followed by a blank line. The `buildtag` vet check catches a misplaced one.
 
 ### 6.6 Embedding files with a directive
-[`internal/examples/blankimport.go`](internal/examples/blankimport.go) · `make example N=embed-directive`
+[`internal/examples/blankimport.go`](../internal/examples/blankimport.go) · `make example N=embed-directive`
 
 ```go
 import _ "embed" // needed for //go:embed into a string or []byte
@@ -441,7 +441,7 @@ $ make example N=embed-directive
 **Takeaway:** `//go:embed` (Go 1.16+) bakes files into the binary at build time: templates, SQL migrations, static web assets, test fixtures. Use `embed.FS` for whole directories. Paths are relative to the source file's directory and can't use `..`. The directive must be written exactly `//go:embed` with no space (§7.8).
 
 ### 6.7 What the binary knows about itself
-[`internal/examples/buildinfo.go`](internal/examples/buildinfo.go) · `make example N=build-info`
+[`internal/examples/buildinfo.go`](../internal/examples/buildinfo.go) · `make example N=build-info`
 
 ```go
 fmt.Fprintln(w, "go version:", runtime.Version())
@@ -461,7 +461,7 @@ main module: github.com/Shreyash019/Golang/topics/01-go-fundamentals-and-toolcha
 **Takeaway:** `go run` doesn't stamp version-control info, but `go build` does (§5.6). A `/version` endpoint or a startup log line built from `debug.ReadBuildInfo` makes every deployed binary identify itself. `(devel)` is the version reported for the main module when it isn't built from a published module version (e.g. installed with `go install module@v1.2.3`).
 
 ### 6.8 Doc comments and `go doc`
-[`internal/temperature/temperature.go`](internal/temperature/temperature.go) is written as a model package doc:
+[`internal/temperature/temperature.go`](../internal/temperature/temperature.go) is written as a model package doc:
 
 ```go
 // Package temperature converts between temperature scales.
@@ -512,7 +512,7 @@ func CToF(c float64) float64
 ```
 **Comment syntax first:** Go has `//` line comments and `/* */` block comments. Line comments are the norm, including for doc comments. Block comments mostly appear in long package docs or to disable code temporarily (Effective Go, "Commentary").
 
-**Takeaway:** doc comment syntax (Go 1.19+, go.dev/doc/comment) is deliberately tiny: paragraphs, `# Headings`, lists, tab-indented code blocks, and `[Name]` doc links. A `Deprecated:` paragraph is recognized by gopls and linters, which flag callers. An `Example…` function in a `_test.go` file ([`example_test.go`](internal/temperature/example_test.go)) is runnable documentation: `go test` checks its `// Output:`, and pkg.go.dev shows it next to the function. `go doc fmt.Println` works the same way for the standard library.
+**Takeaway:** doc comment syntax (Go 1.19+, go.dev/doc/comment) is deliberately tiny: paragraphs, `# Headings`, lists, tab-indented code blocks, and `[Name]` doc links. A `Deprecated:` paragraph is recognized by gopls and linters, which flag callers. An `Example…` function in a `_test.go` file ([`example_test.go`](../internal/temperature/example_test.go)) is runnable documentation: `go test` checks its `// Output:`, and pkg.go.dev shows it next to the function. `go doc fmt.Println` works the same way for the standard library.
 
 ### 6.9 `gofmt` and `go vet` on real mistakes
 `gofmt -d` shows the diff it would apply (real output):
@@ -545,7 +545,7 @@ vetme/main.go:9:2: fmt.Println call has possible Printf formatting directive %d
 ### 6.10 Your first test: table-driven, with subtests
 *(Added 2026-11-03: every exercise in this guide is a test from topic 01 on, so the basics of writing and reading one come first. Testing in depth: 19.)*
 
-A test is a function `TestXxx(t *testing.T)` in a `_test.go` file next to the code. Go has no assertion library: you compare `got` with `want` and call `t.Errorf` (marks the test failed, keeps going) or `t.Fatalf` (marks it failed and stops this test). [`internal/temperature/temperature_test.go`](internal/temperature/temperature_test.go):
+A test is a function `TestXxx(t *testing.T)` in a `_test.go` file next to the code. Go has no assertion library: you compare `got` with `want` and call `t.Errorf` (marks the test failed, keeps going) or `t.Fatalf` (marks it failed and stops this test). [`internal/temperature/temperature_test.go`](../internal/temperature/temperature_test.go):
 
 ```go
 func TestCelsiusFahrenheit(t *testing.T) {
@@ -954,15 +954,15 @@ Review comments a senior Go engineer would leave:
 
 ## 12. Exercises
 
-[`exercises/`](exercises/README.md) · run from this topic folder (`make` lists every command). Don't open `solutions/` until you've tried.
+[`exercises/`](../exercises/README.md) · run from this topic folder (`make` lists every command). Don't open `solutions/` until you've tried.
 
 | # | Exercise | Trains | Command | Status | Score |
 |---|---|---|---|---|---|
-| E1 | [Predict: init order](exercises/01-predict-init-order/) | Variables in dependency order across two files, then `init`s, then `main` (§5.3) | `make ex E=01-predict-init-order` | ⬜ | – |
-| E2 | [Fix the bug: the init trap](exercises/02-fix-init-trap/) | Variables are initialized before `init()` runs (§7.6) | `make ex E=02-fix-init-trap` | ⬜ | – |
-| E3 | [Implement: a go.mod parser](exercises/03-implement-gomod/) | `go.mod` structure (§5.5), table-driven tests, line-numbered errors | `make ex E=03-implement-gomod` | ⬜ | – |
-| E4 | [Refactor: Java-style config](exercises/04-refactor-config/) | `main` + `run`, no getters/`IThing`/`Impl`/`utils`/panics (§8) | `make ex E=04-refactor-config` | ⬜ | – |
-| E5 | [Mini-project: `pkgscan`](exercises/05-project-pkgscan/) | Packages, `main`, imports, doc comments and the go command's directory rules, in a CLI with `cmd/` + `internal/` | `make ex E=05-project-pkgscan` | ⬜ | – |
+| E1 | [Predict: init order](../exercises/01-predict-init-order/) | Variables in dependency order across two files, then `init`s, then `main` (§5.3) | `make ex E=01-predict-init-order` | ⬜ | – |
+| E2 | [Fix the bug: the init trap](../exercises/02-fix-init-trap/) | Variables are initialized before `init()` runs (§7.6) | `make ex E=02-fix-init-trap` | ⬜ | – |
+| E3 | [Implement: a go.mod parser](../exercises/03-implement-gomod/) | `go.mod` structure (§5.5), table-driven tests, line-numbered errors | `make ex E=03-implement-gomod` | ⬜ | – |
+| E4 | [Refactor: Java-style config](../exercises/04-refactor-config/) | `main` + `run`, no getters/`IThing`/`Impl`/`utils`/panics (§8) | `make ex E=04-refactor-config` | ⬜ | – |
+| E5 | [Mini-project: `pkgscan`](../exercises/05-project-pkgscan/) | Packages, `main`, imports, doc comments and the go command's directory rules, in a CLI with `cmd/` + `internal/` | `make ex E=05-project-pkgscan` | ⬜ | – |
 
 Before asking the tutor to `check En`: `make check E=<folder>` (gofmt + vet + race tests).
 
@@ -1001,4 +1001,4 @@ Before asking the tutor to `check En`: `make check E=<folder>` (gofmt + vet + ra
 
 ## 🗣️ Q&A Discussion
 
-<!-- Sessions, exercise reviews and stuck entries are appended below by the AI tutor, per AGENTS.md §9.4. Never delete past entries. -->
+Sessions, exercise reviews and stuck entries are logged in [`go-fundamentals-and-toolchain-qa.md`](go-fundamentals-and-toolchain-qa.md).

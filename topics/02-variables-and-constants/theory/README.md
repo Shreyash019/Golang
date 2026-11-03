@@ -1,14 +1,14 @@
 # 02 · Variables & Constants
 
 > **Level:** Foundation
-> **Prerequisites:** [01 Go fundamentals & toolchain](../01-go-fundamentals-and-toolchain/go-fundamentals-and-toolchain.md) (packages, `go run`, reading a test failure, §6.10)
+> **Prerequisites:** [01 Go fundamentals & toolchain](../../01-go-fundamentals-and-toolchain/theory/README.md) (packages, `go run`, reading a test failure, §6.10)
 > **Related:** 03 Basic types & operators (the numeric types constants convert to) · 04 Control flow (scopes of `if`/`for`/`switch`, per-iteration loop variables) · 05 Functions, closures & defer (closures capture variables) · 09 Pointers & value semantics (where variables live) · 13 The type system (defined types, assignability, untyped constants revisited) · 18 Errors (the `err` shadowing trap in error handling)
 > **Go version:** go1.27.1 (darwin/arm64) · everything here applies from Go 1.22 on, and version-specific behaviour is marked
 > **Targets stuck patterns:** none recorded yet (no diagnostic). Likely targets: bugs that "feel random" because of shadowing (hypothesis 3, missing mental models), and Java/Python habits around constants and globals (hypothesis 4)
 > **Started:** 2026-11-03 · **Status:** 📖 In progress
 >
 > **Syllabus items covered:** 2 (`var`, `:=`, `const`, `iota`, untyped constants, zero values, type inference, scope, shadowing). This topic is the **home** of scope & shadowing and of untyped constants (topic 13 revisits them through the type system).
-> **Run the code:** `cd topics/02-variables-and-constants && make examples` · exercises in [`exercises/`](exercises/README.md)
+> **Run the code:** `cd topics/02-variables-and-constants && make examples` · exercises in [`exercises/`](../exercises/README.md)
 
 ---
 
@@ -137,7 +137,7 @@ var p struct{Name string; Age int}
 
 That's why "the zero value" is one rule and not a table to memorize: **all bits zero** happens to mean `0`, `false`, `""`, `nil` and "empty header" for every built-in type.
 
-**Predict the output** ([`internal/examples/zerovalues.go`](internal/examples/zerovalues.go) · `make example N=zero-values`):
+**Predict the output** ([`internal/examples/zerovalues.go`](../internal/examples/zerovalues.go) · `make example N=zero-values`):
 ```go
 var (
 	i   int
@@ -191,7 +191,7 @@ flowchart TD
 
 The **type inference** rule is simple: with no type written, the variable gets the type of the initializer. If the initializer is a typed expression (`len(x)`, `time.Second`, a function result), that's the type. If it's an **untyped constant**, the variable gets the constant's **default type**.
 
-**Predict the output** ([`internal/examples/declarations.go`](internal/examples/declarations.go) · `make example N=declaration-forms`):
+**Predict the output** ([`internal/examples/declarations.go`](../internal/examples/declarations.go) · `make example N=declaration-forms`):
 ```go
 var a int           // explicit type, zero value
 var b = 42          // type inferred from the initializer
@@ -254,7 +254,7 @@ flowchart LR
   D --> R
 ```
 
-**Predict the output** ([`internal/examples/constants.go`](internal/examples/constants.go) · `make example N=untyped-constants`):
+**Predict the output** ([`internal/examples/constants.go`](../internal/examples/constants.go) · `make example N=untyped-constants`):
 ```go
 const huge = 1 << 100    // far bigger than any integer type, and legal
 const small = huge >> 98 // 4: computed exactly at compile time
@@ -338,7 +338,7 @@ const (
 ```
 is rewritten by the compiler into three independent constant expressions. There's no runtime counter and no enum object: the result is three plain constants.
 
-**Predict the output** ([`internal/examples/iota.go`](internal/examples/iota.go) · `make example N=iota-basics`):
+**Predict the output** ([`internal/examples/iota.go`](../internal/examples/iota.go) · `make example N=iota-basics`):
 ```go
 type Weekday int
 const (
@@ -396,7 +396,7 @@ Two precise rules:
 1. **Lookup** starts at the innermost block containing the use and moves outwards. The first declaration found wins.
 2. **A local constant or variable's scope begins at the end of its declaration** (the ConstSpec, VarSpec or ShortVarDecl), not at the start of the block. So in `x := x + 10`, the `x` on the right is still the outer one.
 
-**Predict the output** ([`internal/examples/scope.go`](internal/examples/scope.go) · `make example N=scope-levels`):
+**Predict the output** ([`internal/examples/scope.go`](../internal/examples/scope.go) · `make example N=scope-levels`):
 ```go
 var scopeLevel = "package" // package level
 
@@ -493,7 +493,7 @@ Why: comparing addresses proves it (`&` gives a variable's address; pointers are
 §5 has the core mechanism examples. These four cover the remaining concepts. `make examples` lists all 19 examples, and `make example N=all` runs them.
 
 ### 6.1 Useful zero values: no constructor needed
-[`internal/examples/zerovalues.go`](internal/examples/zerovalues.go) · `make example N=useful-zero-values`
+[`internal/examples/zerovalues.go`](../internal/examples/zerovalues.go) · `make example N=useful-zero-values`
 ```go
 var sb strings.Builder // ready to use
 sb.WriteString("built ")
@@ -522,7 +522,7 @@ locked a zero-value mutex
 **Takeaway:** "Make the zero value useful" (Go Proverbs; Effective Go, "Allocation with new") is a design principle, not luck. The standard library's types are built so that `var x T` is ready to use. Design your own types the same way (topic 10): then callers never forget a constructor, and a type embedded in a struct works without extra setup. Exceptions are types that need resources or required fields, such as a `*sql.DB` or an HTTP client with a base URL. Those get a `NewX` constructor.
 
 ### 6.2 Assignment: swap, evaluation order, the blank identifier
-[`internal/examples/declarations.go`](internal/examples/declarations.go) · `make example N=multiple-assignment`
+[`internal/examples/declarations.go`](../internal/examples/declarations.go) · `make example N=multiple-assignment`
 
 **Predict the output:**
 ```go
@@ -551,7 +551,7 @@ Why: the spec defines tuple assignment in two phases. First, index expressions a
 **Takeaway:** `x, y = y, x` is the idiomatic swap. `_` is how you ignore a value Go makes you receive, but **never use it to silence an `error`** in real code (topic 18).
 
 ### 6.3 Bit flags with `1 << iota`
-[`internal/examples/iota.go`](internal/examples/iota.go) · `make example N=iota-bit-flags`
+[`internal/examples/iota.go`](../internal/examples/iota.go) · `make example N=iota-bit-flags`
 ```go
 type Perm uint8
 
@@ -614,7 +614,7 @@ Every compile error below was produced with go1.27.1 in a scratch module (`examp
 | 7.12 | Constant slices/maps/structs, `&constant` | `is not constant` / `cannot take address of` | A variable, or a function returning a fresh value |
 
 ### 7.1 `:=` in an inner block shadows the outer variable
-The most common bug of this topic, and #1 in *100 Go Mistakes* ("Unintended variable shadowing"). [`internal/examples/scope.go`](internal/examples/scope.go) · `make example N=shadowed-err`
+The most common bug of this topic, and #1 in *100 Go Mistakes* ("Unintended variable shadowing"). [`internal/examples/scope.go`](../internal/examples/scope.go) · `make example N=shadowed-err`
 ```go
 func portFrom(s string) (int, error) {
 	port := 8080
@@ -1012,15 +1012,15 @@ Review comments a senior Go engineer would leave:
 
 ## 12. Exercises
 
-[`exercises/`](exercises/README.md) · run from this topic folder (`make` lists every command). Don't open `solutions/` until you've tried.
+[`exercises/`](../exercises/README.md) · run from this topic folder (`make` lists every command). Don't open `solutions/` until you've tried.
 
 | # | Exercise | Trains | Command | Status | Score |
 |---|---|---|---|---|---|
-| E1 | [Predict: scope & iota](exercises/01-predict-scope-and-iota/) | iota and implicit repetition, where scope starts, shadowing, `:=` redeclaration, untyped constants & default types (§5.2–5.7) | `make ex E=01-predict-scope-and-iota` | ⬜ | – |
-| E2 | [Fix the bug: shadowing](exercises/02-fix-shadowing/) | The inner-block `:=` bug that compiles and passes `go vet` (§7.1) | `make ex E=02-fix-shadowing` | ⬜ | – |
-| E3 | [Implement: bytesize](exercises/03-implement-bytesize/) | iota unit constants, untyped constants across int64/float64, narrow scopes (§5.3, §5.5, §6.4) | `make ex E=03-implement-bytesize` | ⬜ | – |
-| E4 | [Refactor: Java-style backoff settings](exercises/04-refactor-backoff/) | `const` blocks, MixedCaps, `time.Duration` constants, no getters/globals/explicit zero inits (§8) | `make ex E=04-refactor-backoff` | ⬜ | – |
-| E5 | [Mini-project: `envcheck`](exercises/05-project-envcheck/) | A config loader: default constants, an iota enum with an unset zero value, parsing without shadowing, a CLI with `cmd/` + `internal/` | `make ex E=05-project-envcheck` | ⬜ | – |
+| E1 | [Predict: scope & iota](../exercises/01-predict-scope-and-iota/) | iota and implicit repetition, where scope starts, shadowing, `:=` redeclaration, untyped constants & default types (§5.2–5.7) | `make ex E=01-predict-scope-and-iota` | ⬜ | – |
+| E2 | [Fix the bug: shadowing](../exercises/02-fix-shadowing/) | The inner-block `:=` bug that compiles and passes `go vet` (§7.1) | `make ex E=02-fix-shadowing` | ⬜ | – |
+| E3 | [Implement: bytesize](../exercises/03-implement-bytesize/) | iota unit constants, untyped constants across int64/float64, narrow scopes (§5.3, §5.5, §6.4) | `make ex E=03-implement-bytesize` | ⬜ | – |
+| E4 | [Refactor: Java-style backoff settings](../exercises/04-refactor-backoff/) | `const` blocks, MixedCaps, `time.Duration` constants, no getters/globals/explicit zero inits (§8) | `make ex E=04-refactor-backoff` | ⬜ | – |
+| E5 | [Mini-project: `envcheck`](../exercises/05-project-envcheck/) | A config loader: default constants, an iota enum with an unset zero value, parsing without shadowing, a CLI with `cmd/` + `internal/` | `make ex E=05-project-envcheck` | ⬜ | – |
 
 Before asking the tutor to `check En`: `make check E=<folder>` (gofmt + vet + race tests).
 
@@ -1056,4 +1056,4 @@ Exercise status: ⬜ not started · 🛠️ attempted · ✅ passed + reviewed �
 
 ## 🗣️ Q&A Discussion
 
-<!-- Sessions, exercise reviews and stuck entries are appended below by the AI tutor, per AGENTS.md §9.4. Never delete past entries. -->
+Sessions, exercise reviews and stuck entries are logged in [`variables-and-constants-qa.md`](variables-and-constants-qa.md).

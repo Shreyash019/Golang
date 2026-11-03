@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
-# new-topic.sh creates topics/<NN-slug>/ from templates/topic/ as its own Go module,
-# with the notes file copied from templates/topic-template.md.
+# new-topic.sh creates topics/<NN-slug>/ from templates/topic/ as its own Go module:
+#   README.md                 a short index (from templates/topic/README.md)
+#   theory/README.md          the notes (from templates/topic-template.md)
+#   theory/<slug>-qa.md       the Q&A log (from templates/topic-qa-template.md)
+# {{NN}}, {{SLUG}} and {{TITLE}} are filled in. TITLE is derived from the slug
+# ("arrays-and-slices" → "Arrays & slices"); fix acronyms by hand (REST, API).
 #
 # Usage: scripts/new-topic.sh 06-arrays-and-slices
 set -euo pipefail
@@ -30,7 +34,16 @@ module="$repo/topics/$1"
 template_module="github.com/Shreyash019/Golang/templates/topic"
 
 cp -R "$root/templates/topic" "$dir"
-cp "$root/templates/topic-template.md" "$dir/$slug.md"
+mkdir -p "$dir/theory"
+cp "$root/templates/topic-template.md" "$dir/theory/README.md"
+cp "$root/templates/topic-qa-template.md" "$dir/theory/$slug-qa.md"
+
+nn=${1%%-*}
+title=$(echo "$slug" | sed -e 's/-and-/ \& /g' -e 's/-/ /g')
+title="$(echo "${title:0:1}" | tr '[:lower:]' '[:upper:]')${title:1}"
+for f in "$dir/README.md" "$dir/theory/README.md" "$dir/theory/$slug-qa.md"; do
+	sed -i.bak -e "s#{{NN}}#$nn#g" -e "s#{{SLUG}}#$slug#g" -e "s#{{TITLE}}#${title//&/\\&}#g" "$f"
+done
 find "$dir" -type f \( -name '*.go' -o -name go.mod \) -exec sed -i.bak "s#$template_module#$module#g" {} +
 find "$dir" -name '*.bak' -delete
 

@@ -1,14 +1,14 @@
 # 03 · Basic Types & Operators
 
 > **Level:** Foundation
-> **Prerequisites:** [02 Variables & constants](../02-variables-and-constants/variables-and-constants.md) (zero values, untyped constants and default types, §5.2–5.4)
+> **Prerequisites:** [02 Variables & constants](../../02-variables-and-constants/theory/README.md) (zero values, untyped constants and default types, §5.2–5.4)
 > **Related:** 08 Strings, bytes & runes (strings in depth) · 09 Pointers (pointer types) · 13 The type system (defined types, aliases, assignability in depth) · 18 Errors (`strconv` errors) · 28 Memory management (sizes and layout) · 31 Standard library essentials (`strconv`, `math`)
 > **Go version:** go1.27.1 (darwin/arm64) · everything here applies from Go 1.22 on; `min`/`max` need Go 1.21+
 > **Targets stuck patterns:** none recorded yet (no diagnostic). Likely targets: "random" numeric bugs from wraparound, truncation and float rounding (hypothesis 3, missing mental models), and Python/Java number habits (hypothesis 4)
 > **Started:** 2026-11-03 · **Status:** 📖 In progress
 >
 > **Syllabus items covered:** 3 (bool, integers, floats, complex, string, byte, rune, conversions, overflow, a first look at aliases vs defined types) and 4 (arithmetic, comparison, logical, bitwise, assignment, `++`/`--`, precedence). Strings get a first look here; their home is 08 (full treatment in 08). Defined types and aliases get a first look; their home is 13.
-> **Run the code:** `cd topics/03-basic-types-and-operators && make examples` · exercises in [`exercises/`](exercises/README.md)
+> **Run the code:** `cd topics/03-basic-types-and-operators && make examples` · exercises in [`exercises/`](../exercises/README.md)
 
 ---
 
@@ -103,7 +103,7 @@ And for floats: **a float64 is a binary fraction with 53 significant bits**, so 
 
 Every basic type has a fixed size on a given platform. On 64-bit platforms (amd64, arm64: every common server and laptop), `int`, `uint` and `uintptr` are 8 bytes.
 
-**Predict the output** ([`internal/examples/types.go`](internal/examples/types.go) · `make example N=type-sizes`): what is the size of a `string`?
+**Predict the output** ([`internal/examples/types.go`](../internal/examples/types.go) · `make example N=type-sizes`): what is the size of a `string`?
 <details><summary>Output</summary>
 
 ```
@@ -150,7 +150,7 @@ Signed integers use **two's complement**: the top bit has negative weight. For `
 
 The spec makes this the language rule: "For unsigned integer values, the operations `+`, `-`, `*`, and `<<` are computed modulo 2ⁿ… For signed integers, the operations… may legally overflow and the resulting value exists and is deterministically defined… Overflow does not cause a run-time panic."
 
-**Predict the output** ([`internal/examples/integers.go`](internal/examples/integers.go) · `make example N=integer-overflow`):
+**Predict the output** ([`internal/examples/integers.go`](../internal/examples/integers.go) · `make example N=integer-overflow`):
 ```go
 var i8 int8 = 127
 i8++
@@ -232,7 +232,7 @@ value = (-1)^s × 1.fraction × 2^(exponent - 1023)
 ```
 Any value that is a short sum of powers of two (`0.5`, `0.75`, `3.0`, `1024.125`) is exact. Most decimals (`0.1`, `0.2`, `19.95`) are not. Each operation is correctly rounded, but the errors accumulate.
 
-**Predict the output** ([`internal/examples/floats.go`](internal/examples/floats.go) · `make example N=float-precision`):
+**Predict the output** ([`internal/examples/floats.go`](../internal/examples/floats.go) · `make example N=float-precision`):
 ```go
 a, b := 0.1, 0.2
 fmt.Fprintln(w, "0.1+0.2 =", a+b)
@@ -314,7 +314,7 @@ flowchart LR
   G["int64 2^53+1"] -->|"float64(x): round to 53 bits"| H["2^53"]
 ```
 
-**Predict the output** ([`internal/examples/conversions.go`](internal/examples/conversions.go) · `make example N=conversions`):
+**Predict the output** ([`internal/examples/conversions.go`](../internal/examples/conversions.go) · `make example N=conversions`):
 ```go
 f := -2.7
 fmt.Fprintln(w, "int(-2.7) =", int(f), " Round:", int(math.Round(f)), " Floor:", int(math.Floor(f)))
@@ -349,7 +349,7 @@ Why: 300 = `0x12C`; the low byte `0x2C` = 44, which is positive in both readings
 
 `type Celsius float64` is a **type definition**: it creates a new, distinct type. It has the same representation and operators as `float64`, but you can't mix the two without a conversion, which is the point: the compiler stops you from adding a `Celsius` to a `Fahrenheit` (or cents to a count, E4). `type Temperature = float64` is an **alias declaration**: just a second name for the same type, used mainly for gradual refactoring. `byte` and `rune` are aliases of this kind, which is why `%T` prints `uint8` and `int32`.
 
-**Predict the output** ([`internal/examples/types.go`](internal/examples/types.go) · `make example N=alias-vs-defined`):
+**Predict the output** ([`internal/examples/types.go`](../internal/examples/types.go) · `make example N=alias-vs-defined`):
 ```go
 type Celsius float64        // defined type: a new, distinct type
 type Temperature = float64  // alias: another name for float64
@@ -396,7 +396,7 @@ flowchart TD
   P2 --> G2["(x&mask) == 0<br/>(C: x & (mask == 0))"]
 ```
 
-**Predict the output** ([`internal/examples/operators.go`](internal/examples/operators.go) · `make example N=operator-precedence`):
+**Predict the output** ([`internal/examples/operators.go`](../internal/examples/operators.go) · `make example N=operator-precedence`):
 ```go
 fmt.Fprintln(w, "1+2*3 =", 1+2*3)
 fmt.Fprintln(w, "1<<2+1 =", 1<<2+1) // << binds like *, so (1<<2)+1
@@ -428,7 +428,7 @@ Why: `1<<2+1` is `(1<<2)+1`. `6&3` = `0110 & 0011` = `0010` = 2. `2^3` = `010 XO
 §5 has the core mechanism examples. These cover the remaining concepts. `make examples` lists all 21 examples (2 crash on purpose), and `make example N=all` runs the others.
 
 ### 6.1 Bitwise operators
-[`internal/examples/operators.go`](internal/examples/operators.go) · `make example N=bitwise-ops`
+[`internal/examples/operators.go`](../internal/examples/operators.go) · `make example N=bitwise-ops`
 
 **Predict the output:**
 ```go
@@ -554,7 +554,7 @@ min(3, 1, 2) = 1  max(2.5, 1) = 2.5  min("b", "a") = a
 **Takeaway:** strings compare **byte by byte** (lexicographically on UTF-8 bytes), so uppercase sorts before lowercase and `é` (bytes `C3 A9`) after `z` (`7A`). That's not human alphabetical order: use `golang.org/x/text/collate` for locale-aware sorting, or `strings.EqualFold` for case-insensitive equality. Both operands of a comparison must have the same type (convert one). NaN makes every ordered comparison false, which silently breaks sorting. `min` and `max` (Go 1.21+) take any number of ordered arguments of one type.
 
 ### 6.5 Strings are bytes: a first look
-*(Full treatment in 08.)* [`internal/examples/types.go`](internal/examples/types.go) · `make example N=string-basics`
+*(Full treatment in 08.)* [`internal/examples/types.go`](../internal/examples/types.go) · `make example N=string-basics`
 
 **Predict the output:**
 ```go
@@ -584,7 +584,7 @@ Why: `é` is 2 bytes in UTF-8, so `len` is 6. Indexing gives a **byte** (`uint8`
 </details>
 
 ### 6.6 Numbers ↔ text: `strconv`, not `string()`
-*(`strconv` in depth: 31.)* [`internal/examples/conversions.go`](internal/examples/conversions.go) · `make example N=string-conversions`
+*(`strconv` in depth: 31.)* [`internal/examples/conversions.go`](../internal/examples/conversions.go) · `make example N=string-conversions`
 ```go
 n := 65
 fmt.Fprintln(w, "string(rune(65)) =", string(rune(n)), " strconv.Itoa(65) =", strconv.Itoa(n))
@@ -646,7 +646,7 @@ ones: 3 len: 8 trailing zeros: 4
 **Takeaway:** for **unsigned** arithmetic, `math/bits` exposes the carry and the full 128-bit product (and compiles to single instructions on most CPUs), so overflow detection is exact: a carry of 1 or a nonzero `hi` means it didn't fit. For **signed** `int64`, detect overflow from the signs of the operands and the result, which is E3. `math/big` gives arbitrary precision when you really need it, at the cost of allocations.
 
 ### 6.9 Comparing floats
-[`internal/examples/floats.go`](internal/examples/floats.go) · `make example N=float-comparison`
+[`internal/examples/floats.go`](../internal/examples/floats.go) · `make example N=float-comparison`
 ```go
 func almostEqual(a, b, relTol float64) bool {
 	return math.Abs(a-b) <= relTol*math.Max(math.Abs(a), math.Abs(b))
@@ -665,7 +665,7 @@ almostEqual(1e-20, 2e-20, 1e-9): false
 **Takeaway:** compare computed floats with a **relative** tolerance. An absolute tolerance like `1e-9` would call `1e-20` and `2e-20` equal, although one is twice the other. The standard library has no built-in "almost equal" because the right tolerance depends on the computation. In tests, compare with a tolerance or compare formatted output. Better still, avoid floats where exact answers matter.
 
 ### 6.10 Number literals
-[`internal/examples/types.go`](internal/examples/types.go) · `make example N=number-literals`
+[`internal/examples/types.go`](../internal/examples/types.go) · `make example N=number-literals`
 
 **Predict the output:**
 ```go
@@ -1058,15 +1058,15 @@ Review comments a senior Go engineer would leave:
 
 ## 12. Exercises
 
-[`exercises/`](exercises/README.md) · run from this topic folder (`make` lists every command). Don't open `solutions/` until you've tried.
+[`exercises/`](../exercises/README.md) · run from this topic folder (`make` lists every command). Don't open `solutions/` until you've tried.
 
 | # | Exercise | Trains | Command | Status | Score |
 |---|---|---|---|---|---|
-| E1 | [Predict: integer math](exercises/01-predict-int-math/) | Wraparound, `/` `%` `>>` on negatives, exact vs inexact floats, conversions, precedence, `^`/`&^`, strings as bytes (§5, §6.1, §6.5) | `make ex E=01-predict-int-math` | ⬜ | – |
-| E2 | [Fix the bug: percentage](exercises/02-fix-percentage/) | Integer division before multiplication (§5.3, §7.6) | `make ex E=02-fix-percentage` | ⬜ | – |
-| E3 | [Implement: checked arithmetic](exercises/03-implement-checked/) | Overflow detection, range-checked conversions, NaN/Inf, the `MinInt64` asymmetry (§5.2, §5.4, §5.5, §7.11) | `make ex E=03-implement-checked` | ⬜ | – |
-| E4 | [Refactor: float-money invoice](exercises/04-refactor-invoice/) | Integer cents, exact parsing, integer ceiling division, no `== true`/getters (§8) | `make ex E=04-refactor-invoice` | ⬜ | – |
-| E5 | [Mini-project: `ipcalc`](exercises/05-project-ipcalc/) | `uint32` addresses, masks and shifts, `&` `\|` `^`, size conversions, the defined 32-bit shift; a CLI with `cmd/` + `internal/` | `make ex E=05-project-ipcalc` | ⬜ | – |
+| E1 | [Predict: integer math](../exercises/01-predict-int-math/) | Wraparound, `/` `%` `>>` on negatives, exact vs inexact floats, conversions, precedence, `^`/`&^`, strings as bytes (§5, §6.1, §6.5) | `make ex E=01-predict-int-math` | ⬜ | – |
+| E2 | [Fix the bug: percentage](../exercises/02-fix-percentage/) | Integer division before multiplication (§5.3, §7.6) | `make ex E=02-fix-percentage` | ⬜ | – |
+| E3 | [Implement: checked arithmetic](../exercises/03-implement-checked/) | Overflow detection, range-checked conversions, NaN/Inf, the `MinInt64` asymmetry (§5.2, §5.4, §5.5, §7.11) | `make ex E=03-implement-checked` | ⬜ | – |
+| E4 | [Refactor: float-money invoice](../exercises/04-refactor-invoice/) | Integer cents, exact parsing, integer ceiling division, no `== true`/getters (§8) | `make ex E=04-refactor-invoice` | ⬜ | – |
+| E5 | [Mini-project: `ipcalc`](../exercises/05-project-ipcalc/) | `uint32` addresses, masks and shifts, `&` `\|` `^`, size conversions, the defined 32-bit shift; a CLI with `cmd/` + `internal/` | `make ex E=05-project-ipcalc` | ⬜ | – |
 
 Before asking the tutor to `check En`: `make check E=<folder>` (gofmt + vet + race tests).
 
@@ -1101,4 +1101,4 @@ Exercise status: ⬜ not started · 🛠️ attempted · ✅ passed + reviewed �
 
 ## 🗣️ Q&A Discussion
 
-<!-- Sessions, exercise reviews and stuck entries are appended below by the AI tutor, per AGENTS.md §9.4. Never delete past entries. -->
+Sessions, exercise reviews and stuck entries are logged in [`basic-types-and-operators-qa.md`](basic-types-and-operators-qa.md).

@@ -1,10 +1,10 @@
-# <NN> · <Topic Name>
+# {{NN}} · {{TITLE}}
 
 > **Level:** Foundation | Intermediate | Advanced | Senior
-> **Prerequisites:** [link](../NN-slug/slug.md), …
-> **Related:** [link](../NN-slug/slug.md), …
+> **Prerequisites:** [link](../../NN-slug/theory/README.md), …
+> **Related:** [link](../../NN-slug/theory/README.md), …
 > **Go version:** <output of `go version` when written> · behaviour notes apply from Go <1.N> on
-> **Targets stuck patterns:** <open patterns from `../00-diagnostic/diagnostic.md` this topic addresses, or "none yet">
+> **Targets stuck patterns:** <open patterns from `../../00-diagnostic/theory/README.md` this topic addresses, or "none yet">
 > **Started:** YYYY-MM-DD · **Status:** 📖 In progress
 
 ---
@@ -38,7 +38,7 @@ flowchart LR
 
 ### 5.x <Sub-mechanism>
 - How it works, step by step.
-- **Predict the output** ([`internal/examples/<concept>.go`](internal/examples/) · `make example N=<name>`):
+- **Predict the output** ([`internal/examples/<concept>.go`](../internal/examples/) · `make example N=<name>`):
   ```go
   // the example's code, 5–25 lines
   ```
@@ -89,15 +89,15 @@ Side-by-side code for the important cases, citing Effective Go / Go Code Review 
 |---|---|---|
 
 ## 12. Exercises
-[`exercises/`](exercises/README.md) · run from this topic folder (`make` lists every command). Don't open `solutions/` until you've tried.
+[`exercises/`](../exercises/README.md) · run from the topic folder (`make` lists every command). Don't open `solutions/` until you've tried.
 
 | # | Exercise | Trains | Command | Status | Score |
 |---|---|---|---|---|---|
-| E1 | [Predict: …](exercises/01-predict-…/) | | `make ex E=01-predict-…` | ⬜ | – |
-| E2 | [Fix the bug: …](exercises/02-fix-…/) | | `make ex E=02-fix-…` | ⬜ | – |
-| E3 | [Implement: …](exercises/03-implement-…/) | | `make ex E=03-implement-…` | ⬜ | – |
-| E4 | [Refactor: …](exercises/04-refactor-…/) | | `make ex E=04-refactor-…` | ⬜ | – |
-| E5 | [Mini-project: …](exercises/05-project-…/) | | `make ex E=05-project-…` | ⬜ | – |
+| E1 | [Predict: …](../exercises/01-predict-…/) | | `make ex E=01-predict-…` | ⬜ | – |
+| E2 | [Fix the bug: …](../exercises/02-fix-…/) | | `make ex E=02-fix-…` | ⬜ | – |
+| E3 | [Implement: …](../exercises/03-implement-…/) | | `make ex E=03-implement-…` | ⬜ | – |
+| E4 | [Refactor: …](../exercises/04-refactor-…/) | | `make ex E=04-refactor-…` | ⬜ | – |
+| E5 | [Mini-project: …](../exercises/05-project-…/) | | `make ex E=05-project-…` | ⬜ | – |
 
 Before asking the tutor to `check En`: `make check E=<folder>` (gofmt + vet + race tests).
 
@@ -113,4 +113,4 @@ Effective Go, Go Code Review Comments, the spec, Go blog posts, package docs, bo
 
 ## 🗣️ Q&A Discussion
 
-<!-- Sessions, exercise reviews and stuck entries are appended below by the AI tutor, per AGENTS.md §9.4. Never delete past entries. -->
+Sessions, exercise reviews and stuck entries are logged in [`{{SLUG}}-qa.md`]({{SLUG}}-qa.md).

@@ -40,7 +40,7 @@ The learner is stuck despite months of study, so treat it as a **diagnosis probl
 6. **Toolchain/module confusion.** Packages, `main`, imports, modules, reading compiler errors.
 7. **Passive learning.** Reading and watching without retrieval practice.
 
-**Diagnostic session** (`topics/00-diagnostic/diagnostic.md`, built from the template's header and Q&A section, plus the sections below):
+**Diagnostic session** (findings in `topics/00-diagnostic/theory/README.md`, built from the template's header plus the sections below; the questions and answers in `topics/00-diagnostic/theory/diagnostic-qa.md`):
 1. **Read the learner's earlier code first** (the pre-guide code in git history, see §3, plus any exercise attempts in the repo) and note concrete evidence for or against each hypothesis, with file references.
 2. Ask **8–10 short questions, one at a time** (same rules as §9.2), spread across phases: predict the output, spot the bug, explain a mechanism, write a 5–15-line function. Start mid-level (slices, interfaces, errors) and adapt up or down.
 3. Give one **15-minute coding task** (e.g. a small table-driven-tested function) and review it per §7.
@@ -60,14 +60,18 @@ golang/
 ├── README.md                     ← how to use the repo + Topic Index & Progress tables
 ├── AGENTS.md                     ← these rules (source of truth)
 ├── templates/
-│   ├── topic-template.md         ← skeleton for every topic's notes file
-│   └── topic/                    ← scaffold Go module every topic is created from
+│   ├── topic-template.md         ← skeleton for every topic's notes (theory/README.md)
+│   ├── topic-qa-template.md      ← skeleton for every topic's Q&A log (theory/<slug>-qa.md)
+│   └── topic/                    ← scaffold Go module every topic is created from (incl. the root README.md index)
 ├── scripts/new-topic.sh          ← creates topics/NN-slug/ from the scaffold
 └── topics/
     └── NN-topic-slug/            ← one folder per topic = ONE self-contained Go module
         ├── go.mod                ← module github.com/Shreyash019/Golang/topics/NN-slug
         ├── Makefile              ← make examples | example N= | ex E= | check E= | test | verify | fmt | vet | lint
-        ├── topic-slug.md         ← notes (top) + Q&A log (bottom), ONE file per topic
+        ├── README.md             ← short index: links to the notes, the Q&A log, the exercises (GitHub shows it for the folder)
+        ├── theory/
+        │   ├── README.md         ← the notes, sections 1–14 (GitHub shows it for theory/)
+        │   └── <slug>-qa.md      ← the Q&A log: sessions, exercise reviews, stuck entries (linked from the notes)
         ├── cmd/
         │   └── examples/         ← runner: go run ./cmd/examples [name|all]
         ├── internal/
@@ -86,12 +90,12 @@ There is **no `go.mod` at the repo root**. Each topic builds, runs and tests on 
 
 Rules:
 - Folder name: `NN-kebab-case-slug`. Use the number from the Topic Index in `README.md`. The slug is the kebab-case of the topic's **bold short name** in the index, with `&` written as `and`: **Arrays & slices** (06) → `topics/06-arrays-and-slices/`. If the topic isn't in the index, add it to the right phase first with the next free number.
-- Main file name = slug without the number, e.g. `topics/06-arrays-and-slices/arrays-and-slices.md`.
-- **Topics are grouped.** Each index row lists the items it covers from the 60-item syllabus (1–50 the language and toolchain, 51–60 iterators and backend engineering) (the `Covers` column; the README's *Syllabus coverage* table lists the items). Keep that table and the `Covers` column in sync when topics are added or moved. A topic file must cover **every** listed item in depth. When a topic is created, check its row's `Covers` list against the notes as part of the self-check (§4 step 6).
-- **One home per concept.** Each concept is taught in depth in exactly one topic: its home in the README's *Concept home map*, or the index row whose description names it. Other topics that need it give a 2–5-line recap and link to the home section (`../05-functions-closures-and-defer/functions-closures-and-defer.md#…`) instead of re-teaching it. If a needed concept's home topic isn't written yet, give the short recap and note "full treatment in NN". Never let two topics give conflicting explanations.
-- **One topic = one main MD file.** Notes at the top, the Q&A log appended at the **end of the same file**.
+- **Notes and Q&A files.** The notes are `theory/README.md`; the Q&A log is `theory/<slug>-qa.md`, the slug without the number, e.g. `topics/06-arrays-and-slices/theory/arrays-and-slices-qa.md`. The topic-root `README.md` is only an index (title + links); keep its title in sync with the notes' H1. Links in `theory/` files are relative to `theory/`: `../internal/examples/x.go`, `../exercises/README.md`, another topic's notes `../../05-functions-closures-and-defer/theory/README.md#…`.
+- **Topics are grouped.** Each index row lists the items it covers from the 60-item syllabus (1–50 the language and toolchain, 51–60 iterators and backend engineering) (the `Covers` column; the README's *Syllabus coverage* table lists the items). Keep that table and the `Covers` column in sync when topics are added or moved. A topic's notes must cover **every** listed item in depth. When a topic is created, check its row's `Covers` list against the notes as part of the self-check (§4 step 6).
+- **One home per concept.** Each concept is taught in depth in exactly one topic: its home in the README's *Concept home map*, or the index row whose description names it. Other topics that need it give a 2–5-line recap and link to the home section (`../../05-functions-closures-and-defer/theory/README.md#…`) instead of re-teaching it. If a needed concept's home topic isn't written yet, give the short recap and note "full treatment in NN". Never let two topics give conflicting explanations.
+- **One topic = one notes file + one Q&A file.** The notes (`theory/README.md`) end with a `## 🗣️ Q&A Discussion` section that only links to `<slug>-qa.md`; every session, exercise review and stuck entry is appended to `<slug>-qa.md`, never to the notes.
 - If the topic folder already exists, **never overwrite it**. Read it, continue from where it left off, and append. Never overwrite or delete the learner's own code in an exercise folder.
-- **Every topic is its own Go module**, created only with `scripts/new-topic.sh NN-slug`. The script copies `templates/topic/`, sets the module path to `github.com/Shreyash019/Golang/topics/NN-slug` (from the `origin` remote), sets the `go` line to the installed Go version (minimum Go 1.22), copies the notes template to `topic-slug.md`, and runs `go vet` + `go test`. Run all Go and `make` commands from inside `topics/NN-slug/`. Topic 00 and topic 49 are modules too: their coding tasks go in `exercises/`.
+- **Every topic is its own Go module**, created only with `scripts/new-topic.sh NN-slug`. The script copies `templates/topic/`, sets the module path to `github.com/Shreyash019/Golang/topics/NN-slug` (from the `origin` remote), sets the `go` line to the installed Go version (minimum Go 1.22), creates `theory/README.md` and `theory/<slug>-qa.md` from the two templates, fills `{{NN}}`, `{{SLUG}}` and `{{TITLE}}` (derived from the slug; fix acronyms such as REST or API by hand in all three files), and runs `go vet` + `go test`. Run all Go and `make` commands from inside `topics/NN-slug/`. Topic 00 and topic 49 are modules too: their coding tasks go in `exercises/`.
 - **Standard library first.** Topics, examples and exercises use only the standard library (`net/http`, `encoding/json`, `log/slog`, `context`, `database/sql`, `os/signal`, `testing`, …), the way Go backends are commonly built without frameworks. Add a third-party module (`go get`) only when the topic is about it or the standard library has no equivalent (e.g. a database driver, `golang.org/x/sync/errgroup`, and in the Backend Engineering phase OpenTelemetry, gRPC/protobuf or a message-queue client), and say why in the notes. Topics that need a real service (Postgres, Redis, a broker) run it with Docker in integration tests that skip cleanly when it isn't available, so `make verify` still passes without it.
 - To change the scaffold (`templates/topic/`), keep it compiling: run `make verify` inside it after the change. Existing topics are not updated automatically (§12).
 - **Earlier code (removed, still in git history):** the learner's pre-guide scratch code (`cmd/server/`, `topics/foundation/`, `topics/controlflow/`, `topics/gostrings/`) was removed from the working tree. It is still at commit `9e33e6f`: list it with `git ls-tree -r --name-only 9e33e6f` and read a file with `git show 9e33e6f:topics/gostrings/strings.go`. Use it only as diagnostic evidence (§2). Don't restore it into the repo or link to it from topic files.
@@ -99,9 +103,9 @@ Rules:
 
 ## 4. Workflow when the learner says "learn / teach / explain <topic>"
 
-1. **Locate**: find the topic in the README Topic Index and check `topics/`. If the folder exists, read the file and resume (§10). Read `topics/00-diagnostic/diagnostic.md` if it exists and note which open stuck patterns this topic can target.
-2. **Calibrate (brief)**: name, in one line, the prerequisites not yet ✅ and offer a 5-minute primer inside the file. Don't block on it.
-3. **Create** the topic module with `scripts/new-topic.sh NN-slug` (never by hand). It creates `topic-slug.md` from `templates/topic-template.md` and the `cmd/`, `internal/`, `exercises/` and `Makefile` scaffold.
+1. **Locate**: find the topic in the README Topic Index and check `topics/`. If the folder exists, read its notes and Q&A log and resume (§10). Read `topics/00-diagnostic/theory/README.md` if it exists and note which open stuck patterns this topic can target.
+2. **Calibrate (brief)**: name, in one line, the prerequisites not yet ✅ and offer a 5-minute primer inside the notes. Don't block on it.
+3. **Create** the topic module with `scripts/new-topic.sh NN-slug` (never by hand). It creates the root `README.md` index, `theory/README.md` (notes) and `theory/<slug>-qa.md` (Q&A log) from the templates, and the `cmd/`, `internal/`, `exercises/` and `Makefile` scaffold.
 4. **Write the notes section by section** (several writes/edits), following §5. No truncation, no placeholders, no "TODO", no "see later".
 5. **Build `exercises/`** (§6), then **verify** it (§6.4). Never tell the learner it's ready before verification passes.
 6. **Self-check**: every template section meets the §5 bar, **every item in the row's `Covers` list is taught**, concepts owned by another topic are recapped and linked rather than re-taught (§3), every concept has a worked example whose output was actually produced by running it, every source is real, and the exercise links resolve.
@@ -111,7 +115,7 @@ Rules:
 
 ## 5. Depth standard for the notes (non-negotiable)
 
-Every topic file MUST cover all sections of `templates/topic-template.md`:
+Every topic's notes (`theory/README.md`) MUST cover all sections of `templates/topic-template.md`:
 
 - **Why it exists.** The problem Go's design solves here, the design trade-off the Go team made, and what Python and Java do instead. Start from first principles.
 - **Mental model.** One picture to keep in mind, plus **where it breaks** (the cases the picture gets wrong).
@@ -144,7 +148,7 @@ Every topic file MUST cover all sections of `templates/topic-template.md`:
 | E4 | **Refactor to idiomatic** | `04-refactor-<name>/` | Working code written in a **Java/Python style** (getters, big interfaces, exceptions-as-panics, factories, over-abstraction). Behaviour tests **pass from the start** and must keep passing | Rewrite it as idiomatic Go. Where an anti-pattern is mechanically detectable, add an `idiom_test.go` (using `go/parser`/`go/ast`) that fails until it's removed. Otherwise the review (§7) is the grade |
 | E5 | **Mini-project** | `05-project-<name>/` | A small real program (CLI, HTTP service, worker pool, …) using the topic, in the **backend layout of §6.3**: `cmd/<app>/main.go` (wiring only) + `internal/…`, standard library only. Skeleton with stubs and **failing** tests | Implement it with proper error handling; it must pass `gofmt`, `go vet` and `go test -race` |
 
-Difficulty rises from E1 to E5. Each exercise folder has a short header comment in its main file stating the goal and the concept it trains, and the topic file's §12 links each one.
+Difficulty rises from E1 to E5. Each exercise folder has a short header comment in its main file stating the goal and the concept it trains, and the notes' §12 links each one.
 
 ### 6.2 Conventions
 - Package names: short, lowercase, one word, matching the concept (`02-fix-aliasing/` → `package aliasing`). E1 is `package main`.
@@ -192,7 +196,7 @@ Report the results in chat. If something couldn't be run, say so explicitly.
    - **2**: a correctness or concurrency bug, or tests failing. **Failing tests, `go vet` errors or race reports cap the score at 2.**
    - **1**: fundamentally off, or not attempted.
 4. **Show a strong solution only after a real attempt** (not before), and explain the difference from theirs. Prefer showing a diff against their code over pasting `solutions/`.
-5. Log it in the topic file (§9.4 format "Exercise review") and update the §12 exercise table in the topic file.
+5. Log it in the topic's Q&A file `theory/<slug>-qa.md` (§9.4 format "Exercise review") and update the §12 exercise table in the notes.
 6. Never edit the learner's files to "fix" them unless asked. Suggest the change, and let them type it.
 
 ## 8. "I'm stuck" protocol (the most important rule)
@@ -209,7 +213,7 @@ Report the results in chat. If something couldn't be run, say so explicitly.
 While climbing, classify the root cause: concept gap · wrong mental model · Java/Python habit · misread compiler/test error · toolchain/modules · problem decomposition · Go API unfamiliarity. The class decides what to target next time.
 
 ### 8.2 Log it, always
-Append a `Stuck` entry (§9.4) to the topic's Q&A log right away. If the same root cause has shown up before in **any** topic, add or update a row in `## Stuck patterns (living)` in `topics/00-diagnostic/diagnostic.md` (create that file with just this section if the diagnostic hasn't run yet). Later sessions (§10) open with a question targeting an open pattern.
+Append a `Stuck` entry (§9.4) to the topic's Q&A log right away. If the same root cause has shown up before in **any** topic, add or update a row in `## Stuck patterns (living)` in `topics/00-diagnostic/theory/README.md` (create that file with just this section if the diagnostic hasn't run yet). Later sessions (§10) open with a question targeting an open pattern.
 
 ## 9. Q&A session rules
 
@@ -230,12 +234,12 @@ Default session: ~2 × L1, 2 × L2, 2 × L3, 1 × L4, 1 × L5. Adapt: skip ahead
 1. Ask **one** question. **Wait** for the answer. Never answer your own question in the same message.
 2. Evaluate honestly: **score** `x/5` with a verdict (✅ Strong / 🟡 Partial / ❌ Needs work), **what was right**, **what was missing or wrong** (with the specific correction), a **model answer** at senior level, and an optional **follow-up**.
 3. For code answers, run the code when possible and report the real result.
-4. **Append to the topic file immediately** after each evaluation (§9.4). Don't batch writes.
+4. **Append to the topic's Q&A file (`theory/<slug>-qa.md`) immediately** after each evaluation (§9.4). Don't batch writes.
 
 ### 9.3 Learner-initiated questions
 Answer in depth and log them as `Learner question`. If the answer reveals a gap in the notes, improve that section and mark it `(updated from Q&A on YYYY-MM-DD)`.
 
-### 9.4 Log formats (append at the end of the topic file under `## 🗣️ Q&A Discussion`)
+### 9.4 Log formats (append at the end of `theory/<slug>-qa.md`, under `## 🗣️ Q&A Discussion`)
 
 ```markdown
 ### Session N — YYYY-MM-DD
@@ -282,27 +286,27 @@ Append `#### Session N summary`: questions asked, average score, exercises done 
 
 ## 10. Resuming and revising
 
-- **"continue <topic>" / "quiz me on <topic>"**: read the topic file and its Q&A log, plus the open stuck patterns. Start `Session N+1`, prioritise past gaps, and never repeat a question already scored ≥ 4/5.
+- **"continue <topic>" / "quiz me on <topic>"**: read the topic's notes and its Q&A log, plus the open stuck patterns. Start `Session N+1`, prioritise past gaps, and never repeat a question already scored ≥ 4/5.
 - **"revise <topic>"**: a 10-minute recap from the Cheat Sheet, then 3 quick questions (at least one predict-the-output) on the recorded gaps.
 - **"check <En>" / "I'm stuck on <En>" / "show solution <En>"**: §7 / §8 / §8 rung 5. If no topic is named, use the topic of the most recently edited exercise.
 - **"review my code <path>"**: a §7-style review of any Go code in the repo. Log it in the matching topic's Q&A if there is one.
-- **"mock interview [topic]"**: a 45–60 minute Go technical interview, one stage at a time, waiting for the learner at each: concepts → code reading/predict → live coding (learner writes in a scratch package, with tests) → concurrency → debugging a broken snippet → design/review → wrap-up. Act as the interviewer: probe and push back, but don't solve it for them. Log it in `topics/49-go-interview-practice/go-interview-practice.md` (create the header + Q&A section if missing) as `### Session N — YYYY-MM-DD (Mock interview)`, with per-stage scores and a hire signal at mid-level and senior level.
+- **"mock interview [topic]"**: a 45–60 minute Go technical interview, one stage at a time, waiting for the learner at each: concepts → code reading/predict → live coding (learner writes in a scratch package, with tests) → concurrency → debugging a broken snippet → design/review → wrap-up. Act as the interviewer: probe and push back, but don't solve it for them. Log it in `topics/49-go-interview-practice/theory/go-interview-practice-qa.md` (create it from `templates/topic-qa-template.md` if missing) as `### Session N — YYYY-MM-DD (Mock interview)`, with per-stage scores and a hire signal at mid-level and senior level.
 - **Spaced repetition**: when starting a new topic, if a ✅ topic hasn't been revisited in ~2 weeks (check session dates), suggest one quick predict-the-output question from it.
 - **`🔁 Needs revision`**: set it when a revise or spaced-repetition session on a ✅ topic averages < 3/5. Set it back to ✅ after a revise session at ≥ 4/5.
 
 ## 11. Behaviour rules
 
-- **Write to files, don't just chat.** Anything worth keeping goes in the topic file.
+- **Write to files, don't just chat.** Anything worth keeping goes in the topic's files: explanations in the notes, sessions in the Q&A log.
 - **Honest examiner.** Don't inflate scores. Code that works but reads like Java is a 3, not a 5.
 - **Socratic by default.** Hints before answers, always (§8).
 - **Run, don't guess.** Every output, benchmark or escape-analysis claim shown to the learner comes from an actual run with the installed Go. Use a scratch directory outside the repo for throwaway programs.
 - **Correctness over confidence.** If unsure about a fact, a version or an internal detail, say so. No made-up benchmarks, sources or quotes.
-- **Connect topics.** Link related topic files (`../06-arrays-and-slices/arrays-and-slices.md`) and show how the concepts interact (e.g. slices ↔ escape analysis ↔ GC). Follow the one-home-per-concept rule (§3).
+- **Connect topics.** Link related topics' notes (`../../06-arrays-and-slices/theory/README.md` from a `theory/` file) and show how the concepts interact (e.g. slices ↔ escape analysis ↔ GC). Follow the one-home-per-concept rule (§3).
 - **Today's date** goes in session headers in ISO format (`YYYY-MM-DD`).
 - Keep chat replies short. The depth lives in the files.
 
 ## 12. Maintaining this setup
 
 - **`AGENTS.md` is the only source of truth.** The tool files (`CLAUDE.md`, `GEMINI.md`, `.claude/skills/learn-go/SKILL.md`, `.github/copilot-instructions.md`, `.github/prompts/learn-go.prompt.md`, `.agent/rules/go-tutor.md`, `.agent/workflows/learn-go.md`) hold only pointers and short summaries.
-- When a rule here changes, update in the same change: any tool-file summary that mentions it, `templates/topic-template.md` if the sections change, `templates/topic/` + `scripts/new-topic.sh` if the module layout or `make` targets change, and the learner-facing parts of `README.md` if the workflow or commands change.
+- When a rule here changes, update in the same change: any tool-file summary that mentions it, `templates/topic-template.md` (and `templates/topic-qa-template.md`) if the sections or the log layout change, `templates/topic/` + `scripts/new-topic.sh` if the module layout or `make` targets change, and the learner-facing parts of `README.md` if the workflow or commands change.
 - When a rule change affects existing topics (a new required section, a new exercise kind), don't rewrite old topics silently. List the out-of-date topics and ask the learner whether to upgrade them.
