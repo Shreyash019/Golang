@@ -1,0 +1,9 @@
+# golangci-lint v2 config shared by every topic (make lint).
+version: "2"
+
+linters:
+  exclusions:
+    # Don't require checking errors from fmt.Fprint* to stdout/stderr and
+    # similar calls whose errors are conventionally ignored.
+    presets:
+      - std-error-handling
