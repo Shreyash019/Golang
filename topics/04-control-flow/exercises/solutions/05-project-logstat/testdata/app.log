@@ -1,0 +1,11 @@
+# service log
+2026-11-04T10:00:00Z INFO server started
+2026-11-04T10:00:01Z DEBUG cache warmed
+
+2026-11-04T10:00:02Z WARN slow query took 1.2s
+garbage
+2026-11-04T10:00:03Z ERROR db: connection refused
+2026-11-04T10:00:04Z info request served
+2026-11-04T10:00:05Z FATAL out of memory
+2026-11-04T10:00:06Z TRACE very chatty
+2026-11-04T10:00:07Z ERROR
