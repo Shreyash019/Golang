@@ -201,7 +201,7 @@ Priority (from the syllabus): 🔴 must master · 🟠 important · 🟡 good to
 | 02 | **Variables & constants**: `var`, `:=`, `const`, `iota`, untyped constants, zero values, type inference, scope, shadowing | 🔴 | 2 | 📖 | [notes](topics/02-variables-and-constants/theory/README.md) | 2026-11-03 | |
 | 03 | **Basic types & operators**: bool, integers, floats, complex, string, byte, rune, conversions, overflow, a first look at aliases vs defined types; arithmetic, comparison, logical, bitwise, assignment, `++`/`--`, precedence | 🔴 | 3, 4 | 📖 | [notes](topics/03-basic-types-and-operators/theory/README.md) | 2026-11-03 | |
 | 04 | **Control flow**: `if` (with init), `for` (all forms), `range` incl. range-over-int, `switch`, `fallthrough`, `break`/`continue`, labels, `goto` | 🔴 | 5 | 📖 | [notes](topics/04-control-flow/theory/README.md) | 2026-11-04 | |
-| 05 | **Functions, closures & defer**: declaration, parameters, multiple & named returns, variadics, anonymous functions, first-class & higher-order functions, closures, recursion, `defer`, a first look at returning `error` | 🔴 | 6, 7 | ⬜ | | | |
+| 05 | **Functions, closures & defer**: declaration, parameters, multiple & named returns, variadics, anonymous functions, first-class & higher-order functions, closures, recursion, `defer`, a first look at returning `error` | 🔴 | 6, 7 | 📖 | [notes](topics/05-functions-closures-and-defer/theory/README.md) | 2026-11-04 | |
 
 ### Phase 2 — Data & Memory Basics
 | # | Topic | Pri | Covers | Status | Link | Last session | Notes / gaps |
